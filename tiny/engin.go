@@ -23,6 +23,7 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Request: r,
 	}
 	if handler, ok := e.router.Handle(r.Method, r.URL.Path); ok {
+		fmt.Printf("Got %s request on %s\n", r.Method, r.URL.Path)
 		handler(ctx)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
