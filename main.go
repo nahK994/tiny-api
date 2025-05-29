@@ -22,6 +22,10 @@ func main() {
 		c.JSON(200, fmt.Sprintf("Hello, %s!", input.Name))
 	})
 
+	app.GET("/hello", func(c *tiny.Context) {
+		c.JSON(200, "Ok")
+	})
+
 	if err := app.Run("127.0.0.1:8000"); err != nil {
 		panic(err)
 	}
