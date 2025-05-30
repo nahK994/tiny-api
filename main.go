@@ -22,8 +22,8 @@ func main() {
 		c.JSON(200, fmt.Sprintf("Hello, %s!", input.Name))
 	})
 
-	app.GET("/hello", func(c *tiny.Context) {
-		c.JSON(200, "Ok")
+	app.GET("/hello/:id", func(c *tiny.Context) {
+		c.JSON(200, fmt.Sprintf("id ==> %d\n", c.PathParam["id"]))
 	})
 
 	if err := app.Run("127.0.0.1:8000"); err != nil {

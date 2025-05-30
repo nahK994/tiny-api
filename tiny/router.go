@@ -2,22 +2,44 @@ package tiny
 
 type HandlerFunc func(*Context)
 
+type RouteKey struct {
+	PathPattern string
+	Method      string
+}
+
+type RouteEntry struct {
+	PathParamKeys []string
+	Handler       HandlerFunc
+}
+
 type Router struct {
-	handlers map[string]HandlerFunc
+	handlers map[*RouteKey]*RouteEntry
 }
 
 func NewRouter() *Router {
 	return &Router{
-		handlers: make(map[string]HandlerFunc),
+		handlers: make(map[*RouteKey]*RouteEntry),
 	}
 }
 
 func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
-	key := method + "-" + path
-	r.handlers[key] = handler
+	pathPattern, _ := getPathPattern(path)
+	pathParamKeys, _ := getPathParamKeys(path)
+
+	r.handlers[&RouteKey{
+		PathPattern: string(pathPattern),
+		Method:      method,
+	}] = &RouteEntry{
+		PathParamKeys: pathParamKeys,
+		Handler:       handler,
+	}
 }
 
-func (r *Router) Handle(method string, path string) (HandlerFunc, bool) {
-	handler, exists := r.handlers[method+"-"+path]
-	return handler, exists
+func (r *Router) MatchRoute(method string, actualPath string) (pathPattern, pathParamKeys, HandlerFunc, bool) {
+	pathPattern, _ := getPathPattern(actualPath)
+	handler, exists := r.handlers[&RouteKey{
+		PathPattern: string(pathPattern),
+		Method:      method,
+	}]
+	return pathPattern, handler.PathParamKeys, handler.Handler, exists
 }
