@@ -17,12 +17,13 @@ A minimal and lightweight web framework in Go — inspired by Gin, built for sim
 * [x] Basic routing
 * [x] JSON request parsing
 * [x] JSON response rendering
-* [ ] Swagger documentation support
-* [ ] Middleware support
+* [x] Dynamic routing
 * [ ] Route groups
+* [ ] Template engine support
+* [ ] Middleware support
+* [ ] Swagger documentation support
 * [ ] Unit tests
 * [ ] Static file serving
-* [ ] Template engine support
 
 
 ## Installation
@@ -58,26 +59,20 @@ func main() {
 		c.JSON(200, fmt.Sprintf("Hello, %s!", input.Name))
 	})
 
+	app.GET("/students/:studentId/courses/:courseId/", func(c *tiny.Context) {
+		var resp struct {
+			StudentId int `json:"studentId"`
+			CourseId  int `json:"courseId"`
+		}
+
+		resp.StudentId = c.PathParam["studentId"].(int)
+		resp.CourseId = c.PathParam["courseId"].(int)
+		c.JSON(200, resp)
+	})
+
 	if err := app.Run("127.0.0.1:8000"); err != nil {
 		panic(err)
 	}
-}
-```
-
-
-## Example Request
-
-```bash
-curl -X POST http://localhost:8080/hello \
-     -H "Content-Type: application/json" \
-     -d '{"name": "Shomi"}'
-```
-
-**Response:**
-
-```json
-{
-  "message": "Hello, Shomi!"
 }
 ```
 
