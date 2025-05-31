@@ -1,14 +1,18 @@
 package tiny
 
+import (
+	"regexp"
+)
+
 type HandlerFunc func(*Context)
 
 type RouteKey struct {
-	PathPattern string
+	PathPattern pathPattern
 	Method      string
 }
 
 type RouteEntry struct {
-	PathParamKeys []string
+	PathParamKeys pathParamKeys
 	Handler       HandlerFunc
 }
 
@@ -27,7 +31,7 @@ func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
 	pathParamKeys, _ := getPathParamKeys(path)
 
 	r.handlers[RouteKey{
-		PathPattern: string(pathPattern),
+		PathPattern: pathPattern,
 		Method:      method,
 	}] = &RouteEntry{
 		PathParamKeys: pathParamKeys,
@@ -36,14 +40,25 @@ func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
 }
 
 func (r *Router) MatchRoute(method string, actualPath string) (pathPattern, pathParamKeys, HandlerFunc, bool) {
-	pathPattern, err := getPathPattern(actualPath)
-	if err != nil {
-		return "", nil, nil, false
+	var pathPattern pathPattern
+	for pattern := range r.handlers {
+		if pattern.Method != method {
+			continue
+		}
+		re := regexp.MustCompile("^" + string(pattern.PathPattern) + "$")
+		if re.MatchString(actualPath) {
+			pathPattern = pattern.PathPattern
+			break
+		}
 	}
 
 	handler, exists := r.handlers[RouteKey{
-		PathPattern: string(pathPattern),
+		PathPattern: pathPattern,
 		Method:      method,
 	}]
+	if !exists {
+		return "", nil, nil, false
+	}
+
 	return pathPattern, handler.PathParamKeys, handler.Handler, exists
 }
