@@ -23,7 +23,14 @@ func main() {
 	})
 
 	app.GET("/students/:studentId/courses/:courseId/", func(c *tiny.Context) {
-		c.JSON(200, fmt.Sprintf("studentId ==> %d | courseId ==> %d", c.PathParam["studentId"], c.PathParam["courseId"]))
+		var resp struct {
+			StudentId int `json:"studentId"`
+			CourseId  int `json:"courseId"`
+		}
+
+		resp.StudentId = c.PathParam["studentId"].(int)
+		resp.CourseId = c.PathParam["courseId"].(int)
+		c.JSON(200, resp)
 	})
 
 	if err := app.Run("127.0.0.1:8000"); err != nil {
