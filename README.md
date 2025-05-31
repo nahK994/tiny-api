@@ -76,23 +76,6 @@ func main() {
 }
 ```
 
-
-## Folder Structure
-
-```
-tiny-api/
-│
-├── tiny/               # Core framework code
-│   ├── router.go
-│   ├── context.go
-│   └── server.go
-│
-├── main.go             # Example app using tiny-api
-└── README.md
-```
-
-
-
 ## Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
