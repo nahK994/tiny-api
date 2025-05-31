@@ -25,6 +25,11 @@ func (e *Engine) GET(path string, handler HandlerFunc) {
 
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	pathPattern, pathParamKeys, handler, ok := e.router.MatchRoute(r.Method, r.URL.Path)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("404 not found"))
+		return
+	}
 	urlParams := make(map[string]any)
 
 	re := regexp.MustCompile("^" + string(pathPattern) + "$")
@@ -41,14 +46,9 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if ok {
-		ctx := NewContext(w, r, urlParams)
-		// fmt.Println("Path -->", r.URL.Path, "| Method -->", r.Method)
-		handler(ctx)
-	} else {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("404 not found"))
-	}
+	ctx := NewContext(w, r, urlParams)
+	// fmt.Println("Path -->", r.URL.Path, "| Method -->", r.Method)
+	handler(ctx)
 }
 
 func (e *Engine) Run(addr string) error {

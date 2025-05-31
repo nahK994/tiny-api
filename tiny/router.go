@@ -13,12 +13,12 @@ type RouteEntry struct {
 }
 
 type Router struct {
-	handlers map[*RouteKey]*RouteEntry
+	handlers map[RouteKey]*RouteEntry
 }
 
 func NewRouter() *Router {
 	return &Router{
-		handlers: make(map[*RouteKey]*RouteEntry),
+		handlers: make(map[RouteKey]*RouteEntry),
 	}
 }
 
@@ -26,7 +26,7 @@ func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
 	pathPattern, _ := getPathPattern(path)
 	pathParamKeys, _ := getPathParamKeys(path)
 
-	r.handlers[&RouteKey{
+	r.handlers[RouteKey{
 		PathPattern: string(pathPattern),
 		Method:      method,
 	}] = &RouteEntry{
@@ -36,8 +36,12 @@ func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
 }
 
 func (r *Router) MatchRoute(method string, actualPath string) (pathPattern, pathParamKeys, HandlerFunc, bool) {
-	pathPattern, _ := getPathPattern(actualPath)
-	handler, exists := r.handlers[&RouteKey{
+	pathPattern, err := getPathPattern(actualPath)
+	if err != nil {
+		return "", nil, nil, false
+	}
+
+	handler, exists := r.handlers[RouteKey{
 		PathPattern: string(pathPattern),
 		Method:      method,
 	}]
