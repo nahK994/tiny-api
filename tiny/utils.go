@@ -3,7 +3,7 @@ package tiny
 import "strings"
 
 type pathPattern string
-type pathParamKeys []string
+type HandlerFunc func(*Context)
 
 func getPathPattern(path string) (pathPattern, error) {
 	routeSlices := strings.Split(path, "/")
@@ -20,7 +20,7 @@ func getPathPattern(path string) (pathPattern, error) {
 	return pathPattern(strings.Join(routeSlices, "/")), nil
 }
 
-func getPathParamKeys(path string) (pathParamKeys, error) {
+func getPathParamKeys(path string) ([]string, error) {
 	var urlParamKeys []string = make([]string, 0)
 	routeSlices := strings.Split(path, "/")
 	for i := range routeSlices {

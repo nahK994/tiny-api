@@ -5,8 +5,6 @@ import (
 	"strconv"
 )
 
-type HandlerFunc func(*Context)
-
 type RouteKey struct {
 	PathPattern pathPattern
 	Method      string
