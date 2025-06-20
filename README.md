@@ -14,9 +14,9 @@ A minimal and lightweight web framework in Go — inspired by Gin, built for sim
 
 ## Roadmap
 
-* [x] Basic routing
 * [x] JSON request parsing
 * [x] JSON response rendering
+* [x] Basic routing
 * [x] Dynamic routing
 * [ ] Route groups
 * [ ] Template engine support
