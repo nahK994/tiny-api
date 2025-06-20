@@ -11,37 +11,33 @@ type RouteKey struct {
 	Method      string
 }
 
-type RouteEntry struct {
-	PathParamKeys pathParamKeys
-	Handler       HandlerFunc
-}
-
 type Router struct {
-	handlers map[RouteKey]*RouteEntry
+	handler       map[RouteKey]*HandlerFunc
+	pathParamKeys map[RouteKey][]string
 }
 
 func NewRouter() *Router {
 	return &Router{
-		handlers: make(map[RouteKey]*RouteEntry),
+		handler:       make(map[RouteKey]*HandlerFunc),
+		pathParamKeys: make(map[RouteKey][]string),
 	}
 }
 
 func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
 	pathPattern, _ := getPathPattern(path)
 	pathParamKeys, _ := getPathParamKeys(path)
-
-	r.handlers[RouteKey{
+	routeKeys := RouteKey{
 		PathPattern: pathPattern,
 		Method:      method,
-	}] = &RouteEntry{
-		PathParamKeys: pathParamKeys,
-		Handler:       handler,
 	}
+
+	r.handler[routeKeys] = &handler
+	r.pathParamKeys[routeKeys] = pathParamKeys
 }
 
 func (r *Router) MatchRoute(method string, actualPath string) (pathPattern, pathParamKeys, HandlerFunc, bool) {
 	var pathPattern pathPattern
-	for pattern := range r.handlers {
+	for pattern := range r.handler {
 		if pattern.Method != method {
 			continue
 		}
@@ -52,13 +48,20 @@ func (r *Router) MatchRoute(method string, actualPath string) (pathPattern, path
 		}
 	}
 
-	handler, exists := r.handlers[RouteKey{
+	routeKeys := RouteKey{
 		PathPattern: pathPattern,
 		Method:      method,
-	}]
-	if !exists {
+	}
+
+	handler, existsHandler := r.handler[routeKeys]
+	if !existsHandler {
 		return "", nil, nil, false
 	}
 
-	return pathPattern, handler.PathParamKeys, handler.Handler, exists
+	pathParamKeys, existsPathParamKeys := r.pathParamKeys[routeKeys]
+	if !existsPathParamKeys {
+		return "", nil, nil, false
+	}
+
+	return pathPattern, pathParamKeys, *handler, existsPathParamKeys && existsHandler
 }
