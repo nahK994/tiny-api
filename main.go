@@ -33,6 +33,21 @@ func main() {
 		c.JSON(200, resp)
 	})
 
+	subjectGroup := app.Group("/subjects")
+	subjectGroup.GET("/:subjectId/", func(ctx *tiny.Context) {
+		subjectId := ctx.PathParam["subjectId"].(int)
+		response := map[string]any{
+			"subjectId":   subjectId,
+			"name":        "Sample Subject",
+			"description": "This is a sample subject description.",
+		}
+		ctx.JSON(200, response)
+	})
+	subjectGroup.GET("/", func(ctx *tiny.Context) {
+		courses := []string{"Math", "Science", "History"}
+		ctx.JSON(200, courses)
+	})
+
 	if err := app.Run("127.0.0.1:8000"); err != nil {
 		panic(err)
 	}
