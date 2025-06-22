@@ -15,12 +15,12 @@ func New() *Engine {
 	}
 }
 
-func (e *Engine) POST(path string, handler HandlerFunc) {
-	e.router.AddRoute("POST", path, handler)
+func (e *Engine) POST(path string, handler HandlerFunc, middlewares ...MiddlewareFunc) {
+	e.router.AddRoute("POST", path, handler, middlewares...)
 }
 
-func (e *Engine) GET(path string, handler HandlerFunc) {
-	e.router.AddRoute("GET", path, handler)
+func (e *Engine) GET(path string, handler HandlerFunc, middlewares ...MiddlewareFunc) {
+	e.router.AddRoute("GET", path, handler, middlewares...)
 }
 
 func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
