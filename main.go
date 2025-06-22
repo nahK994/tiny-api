@@ -20,6 +20,7 @@ func LoggingMiddleware(next tiny.HandlerFunc) tiny.HandlerFunc {
 
 func main() {
 	app := tiny.New()
+	app.SetStaticConfig("/static", "/assets")
 
 	app.POST("/hello", func(c *tiny.Context) {
 		var input NameInput
