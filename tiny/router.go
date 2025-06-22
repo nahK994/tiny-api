@@ -22,12 +22,16 @@ func NewRouter() *Router {
 	}
 }
 
-func (r *Router) AddRoute(method string, path string, handler HandlerFunc) {
+func (r *Router) AddRoute(method string, path string, handler HandlerFunc, middlewares ...MiddlewareFunc) {
 	pathPattern, _ := getPathPattern(path)
 	pathParamKeys, _ := getPathParamKeys(path)
 	routeKeys := RouteKey{
 		PathPattern: pathPattern,
 		Method:      method,
+	}
+
+	for _, middleware := range middlewares {
+		handler = middleware(handler)
 	}
 
 	r.handlers[routeKeys] = &handler

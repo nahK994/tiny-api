@@ -4,6 +4,7 @@ import "strings"
 
 type pathPattern string
 type HandlerFunc func(*Context)
+type MiddlewareFunc func(HandlerFunc) HandlerFunc
 
 func getPathPattern(path string) (pathPattern, error) {
 	routeSlices := strings.Split(path, "/")

@@ -10,7 +10,9 @@ type Engine struct {
 }
 
 func New() *Engine {
-	return &Engine{router: NewRouter()}
+	return &Engine{
+		router: NewRouter(),
+	}
 }
 
 func (e *Engine) POST(path string, handler HandlerFunc) {
@@ -30,7 +32,6 @@ func (e *Engine) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := NewContext(w, r, urlParams)
-	// fmt.Println("Path -->", r.URL.Path, "| Method -->", r.Method)
 	handler(ctx)
 }
 
