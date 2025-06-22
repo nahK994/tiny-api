@@ -10,6 +10,14 @@ type NameInput struct {
 	Name string `json:"name"`
 }
 
+func LoggingMiddleware(next tiny.HandlerFunc) tiny.HandlerFunc {
+	return func(c *tiny.Context) {
+		fmt.Println("Before handler execution")
+		next(c)
+		fmt.Println("After handler execution")
+	}
+}
+
 func main() {
 	app := tiny.New()
 
@@ -20,7 +28,7 @@ func main() {
 			return
 		}
 		c.JSON(200, fmt.Sprintf("Hello, %s!", input.Name))
-	})
+	}, LoggingMiddleware)
 
 	app.GET("/students/:studentId/courses/:courseId/", func(c *tiny.Context) {
 		var resp struct {
@@ -34,6 +42,7 @@ func main() {
 	})
 
 	subjectGroup := app.Group("/subjects")
+	subjectGroup.Use(LoggingMiddleware)
 	subjectGroup.GET("/:subjectId/", func(ctx *tiny.Context) {
 		subjectId := ctx.PathParam["subjectId"].(int)
 		response := map[string]any{
