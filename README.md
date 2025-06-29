@@ -20,10 +20,10 @@ A minimal and lightweight web framework in Go — inspired by Gin, built for sim
 * [x] Dynamic routing
 * [x] Route groups
 * [x] Middleware support
+* [x] Static file serving
 * [ ] Template engine support
 * [ ] Swagger documentation support
 * [ ] Unit tests
-* [ ] Static file serving
 
 
 ## Installation
